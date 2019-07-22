@@ -32,5 +32,10 @@ export default createPlugin({
 
 			return bootOptions;
 		},
+
+		'bluebase.reset': async (cache: any, _ctx: any, _BB: BlueBase) => {
+			await AsyncStorage.removeItem(STORAGE_KEY);
+			return cache;
+		},
 	},
 });
