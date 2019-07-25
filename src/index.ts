@@ -28,7 +28,10 @@ export default createPlugin({
 			}
 
 			await saveConfigs(bootOptions, ctx, BB);
-			await BB.Filters.register('bluebase.configs.set', saveConfigs);
+			await BB.Filters.register({
+				event: 'bluebase.configs.set',
+				value: saveConfigs,
+			});
 
 			return bootOptions;
 		},
