@@ -2,13 +2,6 @@ import { BlueBase, BootOptions, createPlugin } from '@bluebase/core';
 
 import { AsyncStorage } from 'react-native';
 
-const STORAGE_KEY = 'bluebase.configs';
-
-async function saveConfigs(_bootOptions: BootOptions, _ctx: any, BB: BlueBase) {
-	const configs = BB.Configs.filterValues(_x => true);
-	await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(configs));
-}
-
 export default createPlugin({
 	description: 'Save BlueBase configs in persistant cache',
 	key: '@bluebase/plugin-config-persist',
@@ -16,18 +9,25 @@ export default createPlugin({
 	version: '1.0.0',
 
 	defaultConfigs: {
-		'plugin.config-persist.configs': {},
+		'plugin.config-persist.key': 'bluebase.configs',
 	},
 
 	filters: {
-		'bluebase.configs.register': async (bootOptions: BootOptions, ctx: any, BB: BlueBase) => {
+		'bluebase.configs.register': async (bootOptions: BootOptions, _ctx: any, BB: BlueBase) => {
+			const STORAGE_KEY = BB.Configs.getValue('plugin.config-persist.key');
 			const configs = await AsyncStorage.getItem(STORAGE_KEY);
 
 			if (configs) {
 				await BB.Configs.registerCollection(JSON.parse(configs));
 			}
 
-			await saveConfigs(bootOptions, ctx, BB);
+			async function saveConfigs(_bootOptions: BootOptions) {
+				const configsObj = BB.Configs.filterValues(_x => true);
+				await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(configsObj));
+				return _bootOptions;
+			}
+
+			await saveConfigs(bootOptions);
 			await BB.Filters.register({
 				event: 'bluebase.configs.set',
 				value: saveConfigs,
@@ -36,7 +36,8 @@ export default createPlugin({
 			return bootOptions;
 		},
 
-		'bluebase.reset': async (cache: any, _ctx: any, _BB: BlueBase) => {
+		'bluebase.reset': async (cache: any, _ctx: any, BB: BlueBase) => {
+			const STORAGE_KEY = BB.Configs.getValue('plugin.config-persist.key');
 			await AsyncStorage.removeItem(STORAGE_KEY);
 			return cache;
 		},
