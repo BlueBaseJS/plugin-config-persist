@@ -73,6 +73,7 @@
     "node": ">=8.9"
   },
   "dependencies": {
+    "crypto-js": "^3.1.9-1",
     "react-native": "^0.57.8",
     "tslib": "^1.9.3"
   },
@@ -84,6 +85,7 @@
     "@bluebase/core": "^5.1.0",
     "@bluebase/storybook-addon": "^3.0.0",
     "@blueeast/tslint-config-blueeast": "^0.7.0",
+    "@types/crypto-js": "^3.1.43",
     "@types/enzyme": "^3.9.0",
     "@types/enzyme-adapter-react-16": "^1.0.5",
     "@types/enzyme-async-helpers": "^0.9.1",
