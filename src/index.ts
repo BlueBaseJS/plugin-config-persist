@@ -29,6 +29,7 @@ export default createPlugin({
 
 			await saveConfigs(bootOptions);
 			await BB.Filters.register({
+				key: 'bluebase-configs-register-from-config-persist-plugin',
 				event: 'bluebase.configs.set',
 				value: saveConfigs,
 			});
