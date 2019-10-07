@@ -12,14 +12,14 @@ async function readConfigs(opts: {
 	let configs = await AsyncStorage.getItem(opts.STORAGE_KEY);
 
 	if (!configs) {
-		return null;
+		return {};
 	}
 
-	if (configs && opts.ENCRYPTION_ENABLE && opts.ENCRYPTION_KEY) {
+	if (opts.ENCRYPTION_ENABLE && opts.ENCRYPTION_KEY) {
 		configs = AES.decrypt(configs, opts.ENCRYPTION_KEY) as any;
 	}
 
-	return JSON.parse(configs || '');
+	return JSON.parse(configs || '{}');
 }
 
 export default createPlugin({
@@ -41,12 +41,12 @@ export default createPlugin({
 			const STORAGE_KEY = BB.Configs.getValue('plugin.config-persist.key');
 
 			const configs = await readConfigs({ ENCRYPTION_ENABLE, ENCRYPTION_KEY, STORAGE_KEY });
-			await BB.Configs.registerCollection(JSON.parse(configs));
+			await BB.Configs.registerCollection(configs);
 
 			async function saveConfigs(_bootOptions: BootOptions) {
 				const configsObj = BB.Configs.filterValues(_x => true);
 				const configStr = ENCRYPTION_ENABLE
-					? AES.encrypt(configs, ENCRYPTION_KEY).toString()
+					? AES.encrypt(JSON.stringify(configsObj), ENCRYPTION_KEY).toString()
 					: JSON.stringify(configsObj);
 
 				await AsyncStorage.setItem(STORAGE_KEY, configStr);
