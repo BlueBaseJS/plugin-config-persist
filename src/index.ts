@@ -13,34 +13,46 @@ export default createPlugin({
 	},
 
 	filters: {
-		'bluebase.configs.register': async (bootOptions: BootOptions, _ctx: any, BB: BlueBase) => {
-			const STORAGE_KEY = BB.Configs.getValue('plugin.config-persist.key');
-			const configs = await AsyncStorage.getItem(STORAGE_KEY);
+		'bluebase.configs.register': [
+			{
+				key: 'bluebase-configs-persist-register',
+				priority: 10,
+				value: async (bootOptions: BootOptions, _ctx: any, BB: BlueBase) => {
+					const STORAGE_KEY = BB.Configs.getValue('plugin.config-persist.key');
+					const configs = await AsyncStorage.getItem(STORAGE_KEY);
 
-			if (configs) {
-				await BB.Configs.registerCollection(JSON.parse(configs));
-			}
+					if (configs) {
+						await BB.Configs.registerCollection(JSON.parse(configs));
+					}
 
-			async function saveConfigs(_bootOptions: BootOptions) {
-				const configsObj = BB.Configs.filterValues(_x => true);
-				await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(configsObj));
-				return _bootOptions;
-			}
+					async function saveConfigs(_bootOptions: BootOptions) {
+						const configsObj = BB.Configs.filterValues(_x => true);
+						await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(configsObj));
+						return _bootOptions;
+					}
 
-			await saveConfigs(bootOptions);
-			await BB.Filters.register({
-				event: 'bluebase.configs.set',
-				key: 'bluebase-configs-register-from-config-persist-plugin',
-				value: saveConfigs,
-			});
+					await saveConfigs(bootOptions);
+					await BB.Filters.register({
+						event: 'bluebase.configs.set',
+						key: 'bluebase-configs-register-from-config-persist-plugin',
+						value: saveConfigs,
+					});
 
-			return bootOptions;
-		},
+					return bootOptions;
+				},
+			},
+		],
 
-		'bluebase.reset': async (cache: any, _ctx: any, BB: BlueBase) => {
-			const STORAGE_KEY = BB.Configs.getValue('plugin.config-persist.key');
-			await AsyncStorage.removeItem(STORAGE_KEY);
-			return cache;
-		},
+		'bluebase.reset': [
+			{
+				key: 'bluebase-configs-persist-reset',
+				priority: 2,
+				value: async (cache: any, _ctx: any, BB: BlueBase) => {
+					const STORAGE_KEY = BB.Configs.getValue('plugin.config-persist.key');
+					await AsyncStorage.removeItem(STORAGE_KEY);
+					return cache;
+				},
+			},
+		],
 	},
 });
