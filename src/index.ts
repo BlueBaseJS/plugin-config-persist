@@ -43,8 +43,8 @@ export default createPlugin({
 			priority: 2,
 			value: async (cache: any, _ctx: any, BB: BlueBase) => {
 				const STORAGE_KEY = BB.Configs.getValue('plugin.config-persist.key');
-				if(STORAGE_KEY){
-				await AsyncStorage.removeItem(STORAGE_KEY);
+				if (STORAGE_KEY) {
+					await AsyncStorage.removeItem(STORAGE_KEY);
 				}
 				return cache;
 			},
