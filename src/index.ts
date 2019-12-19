@@ -37,10 +37,17 @@ export default createPlugin({
 			return bootOptions;
 		},
 
-		'bluebase.reset': async (cache: any, _ctx: any, BB: BlueBase) => {
-			const STORAGE_KEY = BB.Configs.getValue('plugin.config-persist.key');
-			await AsyncStorage.removeItem(STORAGE_KEY);
-			return cache;
+		'bluebase.reset': {
+			event: 'bluebase.reset',
+			key: 'bluebase-configs-persist-reset',
+			priority: 2,
+			value: async (cache: any, _ctx: any, BB: BlueBase) => {
+				const STORAGE_KEY = BB.Configs.getValue('plugin.config-persist.key');
+				if(STORAGE_KEY){
+				await AsyncStorage.removeItem(STORAGE_KEY);
+				}
+				return cache;
+			},
 		},
 	},
 });
