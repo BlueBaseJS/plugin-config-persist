@@ -43,6 +43,7 @@ test('Plugin should not load configs if AsyncStorage returns null', async () => 
 
 	const BB = new BlueBase();
 	await BB.Plugins.register(Plugin);
+	// await BB.Configs.setValue('plugin.config-persist.key', '');
 	await BB.boot();
 
 	expect(BB.Configs.size()).toBe(12);
