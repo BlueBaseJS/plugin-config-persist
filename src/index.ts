@@ -1,6 +1,6 @@
 import { BlueBase, BootOptions, createPlugin } from '@bluebase/core';
 
-import { AsyncStorage } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default createPlugin({
 	description: 'Save BlueBase configs in persistant cache',
