@@ -1,8 +1,8 @@
-import { AsyncStorage } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BlueBase } from '@bluebase/core';
 import Plugin from '../index';
 
-jest.mock('react-native/Libraries/Storage/AsyncStorage', () => ({
+jest.mock('@react-native-async-storage/async-storage', () => ({
 	getItem: jest.fn(),
 	removeItem: jest.fn(),
 	setItem: jest.fn(),
