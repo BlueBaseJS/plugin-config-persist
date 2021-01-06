@@ -19,10 +19,12 @@ export default createPlugin({
 				priority: 10,
 				value: async (bootOptions: BootOptions, _ctx: any, BB: BlueBase) => {
 					const STORAGE_KEY = BB.Configs.getValue('plugin.config-persist.key');
-					const configs = await AsyncStorage.getItem(STORAGE_KEY);
+					const configs: any = await AsyncStorage.getItem(STORAGE_KEY);
+					let Configs = JSON.parse(configs);
+					delete Configs['version']
 
-					if (configs) {
-						await BB.Configs.registerCollection(JSON.parse(configs));
+					if (Configs) {
+						await BB.Configs.registerCollection(Configs);
 					}
 
 					async function saveConfigs(_bootOptions: BootOptions) {
