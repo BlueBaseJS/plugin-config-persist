@@ -18,12 +18,23 @@ export default createPlugin({
 				key: 'bluebase-configs-persist-register',
 				priority: 10,
 				value: async (bootOptions: BootOptions, _ctx: any, BB: BlueBase) => {
+
+					// Fetch plugin configs
+					const VERSION = BB.Configs.getValue('version');
 					const STORAGE_KEY = BB.Configs.getValue('plugin.config-persist.key');
+
+					// Load previous configs from cache
 					const configs: any = await AsyncStorage.getItem(STORAGE_KEY);
-					let Configs = JSON.parse(configs);
-					delete Configs['version']
-					delete Configs['author']
-					if (Configs) {
+
+					// If there are configs in the cache, then load them in the app
+					if (configs) {
+						let Configs = JSON.parse(configs);
+						const CACHE_VERSION = Configs['version'];
+
+						if (VERSION !== CACHE_VERSION) {
+							Configs = await BB.Filters.run('plugin.config-persist.migration', Configs, { previousVersion: CACHE_VERSION, version: VERSION });
+						}
+
 						await BB.Configs.registerCollection(Configs);
 					}
 
@@ -34,10 +45,23 @@ export default createPlugin({
 					}
 
 					await saveConfigs(bootOptions);
+
+
+					// Whenever a config is set in the application,
+					// save it to the cache
 					await BB.Filters.register({
 						event: 'bluebase.configs.set',
 						key: 'bluebase-configs-register-from-config-persist-plugin',
 						value: saveConfigs,
+					});
+
+					// Upgrade version in cache, when an app is upgraded
+					await BB.Filters.register({
+						event: 'plugin.config-persist.migration',
+						key: 'bluebase-configs-upgrade-version-on-migration',
+						value: (Configs: any) => {
+							return { ...Configs, version: VERSION }
+						},
 					});
 
 					return bootOptions;
