@@ -22,7 +22,7 @@ export default createPlugin({
 					const configs: any = await AsyncStorage.getItem(STORAGE_KEY);
 					let Configs = JSON.parse(configs);
 					delete Configs['version']
-
+					delete Configs['author']
 					if (Configs) {
 						await BB.Configs.registerCollection(Configs);
 					}
