@@ -1,6 +1,7 @@
 import 'jest-enzyme';
 import 'react-native';
-import Adapter from 'enzyme-adapter-react-16';
+
+import Adapter from '@wojtekmaj/enzyme-adapter-react-17';
 import Enzyme from 'enzyme';
 
 /**
@@ -8,8 +9,11 @@ import Enzyme from 'enzyme';
  */
 const { JSDOM } = require('jsdom');
 
-const jsdom = new JSDOM('<!doctype html><html><body></body></html>');
+const jsdom = new JSDOM('<!doctype html><html><body></body></html>', {
+	url: 'http://localhost'
+});
 const { window } = jsdom;
+window.Date = Date;
 
 function copyProps(src: any, target: any) {
 	Object.defineProperties(target, {
@@ -29,6 +33,7 @@ global.document = window.document;
 global.navigator = {
 	userAgent: 'node.js',
 };
+
 copyProps(window, global);
 
 /**
@@ -51,3 +56,6 @@ console.error = (message: any) => {
 
 	originalConsoleError(message);
 };
+
+// Mocks
+jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper');

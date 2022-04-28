@@ -2,4 +2,4 @@
 
 ### Features
 
--   Allows custom config key ([b9ea723](https://github.com/BlueBaseJS/plugin-config-persist/commit/b9ea723))
+*   Allows custom config key ([b9ea723](https://github.com/BlueBaseJS/plugin-config-persist/commit/b9ea723))

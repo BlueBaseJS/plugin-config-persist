@@ -1,7 +1,9 @@
 import { BlueBase, BootOptions, createPlugin } from '@bluebase/core';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import CryptoJS from 'crypto-js';
 import AES from 'crypto-js/aes';
-import { AsyncStorage } from 'react-native';
+
+import { mergetConfigs } from './mergeConfigs';
 import { VERSION } from './version';
 
 async function readConfigs(opts: {
@@ -9,42 +11,55 @@ async function readConfigs(opts: {
 	ENCRYPTION_KEY: string | null;
 	STORAGE_KEY: string;
 }) {
-	let configs = await AsyncStorage.getItem(opts.STORAGE_KEY);
+	try {
+		let configs = await AsyncStorage.getItem(opts.STORAGE_KEY);
 
-	if (!configs) {
-		return {};
+		if (!configs) {
+			return [];
+		}
+
+		if (opts.ENCRYPTION_ENABLE && opts.ENCRYPTION_KEY) {
+			const bytes = AES.decrypt(configs, opts.ENCRYPTION_KEY) as any;
+			configs = bytes.toString(CryptoJS.enc.Utf8);
+		}
+
+		return JSON.parse(configs || '[]');
+	} catch (error) {
+		return [];
 	}
-
-	if (opts.ENCRYPTION_ENABLE && opts.ENCRYPTION_KEY) {
-		configs = AES.decrypt(configs, opts.ENCRYPTION_KEY) as any;
-	}
-
-	return JSON.parse(configs || '{}');
 }
 
 export default createPlugin({
 	description: 'Save BlueBase configs in persistant cache',
 	key: '@bluebase/plugin-config-persist',
-	name: 'BlueBase Config Persist',
+	name: 'plugin-config-persist',
 	version: VERSION,
 
 	defaultConfigs: {
-		'plugin.config-persist.encryption.enable': false,
-		'plugin.config-persist.encryption.key': null,
-		'plugin.config-persist.key': 'bluebase.configs',
+		'plugin.config-persist.encryptionEnable': false,
+		'plugin.config-persist.encryptionKey': null,
+		'plugin.config-persist.key': 'bluebase-config',
+		'plugin.config-persist.dontResetOnUpdate': [],
 	},
 
 	filters: {
 		'bluebase.configs.register': async (bootOptions: BootOptions, _ctx: any, BB: BlueBase) => {
-			const ENCRYPTION_ENABLE = BB.Configs.getValue('plugin.config-persist.encryption.enable');
-			const ENCRYPTION_KEY = BB.Configs.getValue('plugin.config-persist.encryption.key');
-			const STORAGE_KEY = BB.Configs.getValue('plugin.config-persist.key');
+			const ENCRYPTION_ENABLE = BB.Configs.getValue('plugin.config-persist.encryptionEnable');
+			const ENCRYPTION_KEY =
+				process.env.BB_CONFIGS_ENCRYPTION_KEY ||
+				BB.Configs.getValue('plugin.config-persist.encryptionKey');
 
-			const configs = await readConfigs({ ENCRYPTION_ENABLE, ENCRYPTION_KEY, STORAGE_KEY });
-			await BB.Configs.registerCollection(configs);
+			const STORAGE_KEY = BB.Configs.getValue('plugin.config-persist.key');
+			const DONT_RESET = BB.Configs.getValue('plugin.config-persist.dontResetOnUpdate');
+
+			const initialConfigs = Array.from(BB.Configs.values());
+			const cachedConfigs = await readConfigs({ ENCRYPTION_ENABLE, ENCRYPTION_KEY, STORAGE_KEY });
+			const mergedConfigs = mergetConfigs(initialConfigs, cachedConfigs, DONT_RESET);
+
+			await BB.Configs.registerCollection(mergedConfigs);
 
 			async function saveConfigs(_bootOptions: BootOptions) {
-				const configsObj = BB.Configs.filterValues(_x => true);
+				const configsObj = Array.from(BB.Configs.values());
 				const configStr = ENCRYPTION_ENABLE
 					? AES.encrypt(JSON.stringify(configsObj), ENCRYPTION_KEY).toString()
 					: JSON.stringify(configsObj);
@@ -56,7 +71,7 @@ export default createPlugin({
 			await saveConfigs(bootOptions);
 			await BB.Filters.register({
 				event: 'bluebase.configs.set',
-				key: 'bluebase-configs-register-from-config-persist-plugin',
+				key: 'plugin-config-persist',
 				value: saveConfigs,
 			});
 
