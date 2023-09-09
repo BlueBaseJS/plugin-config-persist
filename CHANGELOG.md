@@ -1,3 +1,9 @@
+# [2.1.0](https://github.com/BlueBaseJS/plugin-config-persist/compare/v2.0.0...v2.1.0) (2023-09-09)
+
+### Features
+
+*   Expo 49 ([bd026d1](https://github.com/BlueBaseJS/plugin-config-persist/commit/bd026d1570a043daecd07638738b190f2fb9361f))
+
 # [2.0.0](https://github.com/BlueBaseJS/plugin-config-persist/compare/v1.2.2...v2.0.0) (2022-04-28)
 
 ### Features
