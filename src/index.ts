@@ -52,10 +52,10 @@ export default createPlugin({
 			const cachedConfigs: ConfigResisteryItem[] = await readConfigs({
 				ENCRYPTION_ENABLE,
 				ENCRYPTION_KEY,
-				STORAGE_KEY
+				STORAGE_KEY,
 			});
 
-			const mutatedConfigs = cachedConfigs.filter(c => c.mutated);
+			const mutatedConfigs = cachedConfigs.filter((c) => c.mutated);
 
 			await BB.Configs.registerCollection(mutatedConfigs);
 
