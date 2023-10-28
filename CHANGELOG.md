@@ -1,3 +1,13 @@
+# [3.0.0](https://github.com/BlueBaseJS/plugin-config-persist/compare/v2.1.0...v3.0.0) (2023-10-28)
+
+### Features
+
+*   Persist on ([51312d7](https://github.com/BlueBaseJS/plugin-config-persist/commit/51312d7602016e6cb23b8f63823a3aee6d30510c))
+
+### BREAKING CHANGES
+
+*   This version no longer persists all configs
+
 # [2.1.0](https://github.com/BlueBaseJS/plugin-config-persist/compare/v2.0.0...v2.1.0) (2023-09-09)
 
 ### Features
