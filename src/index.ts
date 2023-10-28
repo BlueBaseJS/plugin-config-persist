@@ -1,9 +1,8 @@
-import { BlueBase, BootOptions, createPlugin } from '@bluebase/core';
+import { BlueBase, BootOptions, ConfigResisteryItem, createPlugin } from '@bluebase/core';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CryptoJS from 'crypto-js';
 import AES from 'crypto-js/aes';
 
-import { mergetConfigs } from './mergeConfigs';
 import { VERSION } from './version';
 
 async function readConfigs(opts: {
@@ -39,7 +38,6 @@ export default createPlugin({
 		'plugin.config-persist.encryptionEnable': false,
 		'plugin.config-persist.encryptionKey': null,
 		'plugin.config-persist.key': 'bluebase-config',
-		'plugin.config-persist.dontResetOnUpdate': [],
 	},
 
 	filters: {
@@ -50,16 +48,19 @@ export default createPlugin({
 				BB.Configs.getValue('plugin.config-persist.encryptionKey');
 
 			const STORAGE_KEY = BB.Configs.getValue('plugin.config-persist.key');
-			const DONT_RESET = BB.Configs.getValue('plugin.config-persist.dontResetOnUpdate');
 
-			const initialConfigs = Array.from(BB.Configs.values());
-			const cachedConfigs = await readConfigs({ ENCRYPTION_ENABLE, ENCRYPTION_KEY, STORAGE_KEY });
-			const mergedConfigs = mergetConfigs(initialConfigs, cachedConfigs, DONT_RESET);
+			const cachedConfigs: ConfigResisteryItem[] = await readConfigs({
+				ENCRYPTION_ENABLE,
+				ENCRYPTION_KEY,
+				STORAGE_KEY
+			});
 
-			await BB.Configs.registerCollection(mergedConfigs);
+			const mutatedConfigs = cachedConfigs.filter(c => c.mutated);
+
+			await BB.Configs.registerCollection(mutatedConfigs);
 
 			async function saveConfigs(_bootOptions: BootOptions) {
-				const configsObj = Array.from(BB.Configs.values());
+				const configsObj = Array.from(BB.Configs.values()).filter((c) => c.mutated);
 				const configStr = ENCRYPTION_ENABLE
 					? AES.encrypt(JSON.stringify(configsObj), ENCRYPTION_KEY).toString()
 					: JSON.stringify(configsObj);

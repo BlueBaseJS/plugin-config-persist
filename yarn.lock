@@ -2401,10 +2401,10 @@
     "@react-navigation/native-stack" "^6.9.13"
     "@react-navigation/stack" "^6.3.17"
 
-"@bluebase/core@^8.2.0":
-  version "8.2.0"
-  resolved "https://registry.yarnpkg.com/@bluebase/core/-/core-8.2.0.tgz#4b19bfa21cbbf8ac84b43095cc26318952d91af4"
-  integrity sha512-KRaRO+i8hzW43zb62UsI21dhPrqsZBYy2q6g0sZFuihEtQroSiFTLZAV1vJt2GNwEPza5Apk0L2YproOrTbF8g==
+"@bluebase/core@^8.3.0":
+  version "8.3.0"
+  resolved "https://registry.yarnpkg.com/@bluebase/core/-/core-8.3.0.tgz#1ef9999025d43948e1f4a9c120330213f2e84aab"
+  integrity sha512-W2po+Ekg5aMHh2axlW3sSSROXSEHba+9z2V8NwuUxAgBrw3OGYolu+SRKghdqsmXHjsWUQRlOzP2hOl976NzQA==
   dependencies:
     "@bluebase/components" "^8.0.0-alpha.11"
     deepmerge "^4.2.2"
@@ -2495,12 +2495,12 @@
     react-router-dom "^5.1.2"
     react-router-native "^5.1.2"
 
-"@bluebase/plugin-responsive-grid@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@bluebase/plugin-responsive-grid/-/plugin-responsive-grid-1.0.0.tgz#87eea605eea70a65b84f9ba3abc2fe963540c280"
-  integrity sha512-Gj3nP+UI4MbAgHsZSmEk4+Kqk7jmx9CgRWfG5mltPju9/z5aNBDIdmLnmC0qeEp480YLbwhQNQwyhF2tg9tcFA==
+"@bluebase/plugin-responsive-grid@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@bluebase/plugin-responsive-grid/-/plugin-responsive-grid-1.1.0.tgz#a7e9fc223ba5136ebe3c2d3b95e1c14580fd5305"
+  integrity sha512-tcxsaKVLPUtdMSD2ibUbYmhKARepyGeo+bns1Lj8rHuSdjqk8fq2lundqmf7/h6/FfP/mJcecYAz8J+FKbjruA==
   dependencies:
-    "@bluebase/components" "^6.4.0"
+    "@bluebase/components" "^8.0.0"
 
 "@bluebase/plugin-settings-app@^6.0.0":
   version "6.0.0"
